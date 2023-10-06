@@ -10,10 +10,12 @@ public:
 	void run();
 	bool shouldRun() const;
 	void drawCells() const;
-	bool shouldTick() const;
+	bool shouldTick();
 	void tick();
 	int getAliveNeighbours(int pos) const;
+	void resetBoard();
 	int cellCount;
+	float speed;
 private:
 	struct cell {
 		bool isAlive = false;
@@ -27,5 +29,5 @@ private:
 	float cellSize;
 	cell* board[300 * 100];
 	GUI gui;
-	double lastTick;
+	float lastTick;
 };

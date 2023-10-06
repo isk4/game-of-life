@@ -1,5 +1,4 @@
 #include "Game.h"
-#include "GUI.h"
 #include "raylib.h"
 #include <cmath>
 
@@ -22,19 +21,15 @@ void Game::init()
 {   
     InitWindow(screenWidth, screenHeight, "Game of Life");
     SetTargetFPS(60);
-    lastTick = GetTime();
+    gui.init(this);
+    lastTick = 0;
+    speed = 10;
+    cellCount = 0;
     
     for (int i = 0; i < boardWidth * boardHeight; i++)
     {
         board[i] = new cell;
     }
-
-    for (int i = 0; i < 50000; i++)
-    {
-        board[GetRandomValue(2000, 28000)]->willLive = true;
-    }
-
-    cellCount = 0;
 }
 
 void Game::run()
@@ -43,7 +38,7 @@ void Game::run()
     ClearBackground(BLACK);
     if (this->shouldTick()) tick();
     this->drawCells();
-    gui.draw(cellCount);
+    gui.draw();
     EndDrawing();
 }
 
@@ -89,10 +84,18 @@ void Game::drawCells() const
 }
 
 
-bool Game::shouldTick() const
+bool Game::shouldTick()
 {
-    return true;
-    //return GetTime() >= ceil(lastTick);
+    lastTick += GetFrameTime();
+    if (lastTick >= 1 / speed)
+    {
+        lastTick = 0;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void Game::tick()
@@ -114,17 +117,9 @@ void Game::tick()
     for (int i = 0; i < boardWidth * boardHeight; i++)
     {
         neighbours_count = getAliveNeighbours(i);
-        if (board[i]->isAlive)
-        {
-            board[i]->willLive = (neighbours_count == 3 || neighbours_count == 2);
-        }
-        else
-        {
-            if (neighbours_count == 3) board[i]->willLive = true;
-        }
+        board[i]->willLive = (board[i]->isAlive && neighbours_count == 2) || neighbours_count == 3;
     }
     cellCount = cells;
-    lastTick = GetTime();
 }
 
 int Game::getAliveNeighbours(int pos) const
@@ -147,4 +142,16 @@ int Game::getAliveNeighbours(int pos) const
     if ((pos + (boardWidth + 1) < boardWidth * boardHeight) && board[pos + (boardWidth + 1)]->isAlive)
         count++;
     return count;
+}
+
+void Game::resetBoard()
+{
+    for (int i = 0; i < boardWidth * boardHeight; i++)
+    {
+        board[i]->isAlive = false;
+    }
+    for (int i = 0; i < 50000; i++)
+    {
+        board[GetRandomValue(2000, 28000)]->willLive = true;
+    }
 }
