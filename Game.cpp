@@ -150,8 +150,8 @@ void Game::resetBoard()
     {
         board[i]->isAlive = false;
     }
-    for (int i = 0; i < 50000; i++)
+    for (int i = 0; i < boardWidth * boardHeight; i++)
     {
-        board[GetRandomValue(2000, 28000)]->willLive = true;
+        board[i]->willLive = GetRandomValue(0, 1);
     }
 }

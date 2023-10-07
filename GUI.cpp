@@ -54,6 +54,7 @@ void GUI::handleKeys()
 {
     switch (GetKeyPressed())
     {
+    // Spacebar
     case 32:
         game->resetBoard();
         break;
